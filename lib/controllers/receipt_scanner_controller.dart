@@ -16,7 +16,7 @@ class ReceiptScannerController extends BaseController {
     documentFormat: DocumentFormat.jpeg,
     mode: ScannerMode.full,
     pageLimit: 1,
-    isGalleryImport: true,
+    isGalleryImport: false,
   );
 
   /// Creates a document scanner instance with the specified options.
