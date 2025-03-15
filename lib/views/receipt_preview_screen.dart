@@ -21,7 +21,7 @@ class ReceiptPreviewScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  "Document :$index",
+                  "Document :${index + 1}",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
