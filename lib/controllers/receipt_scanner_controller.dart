@@ -4,51 +4,44 @@ import 'package:edge_detection/utils/navigation_service.dart';
 import '../utils/snacbar.dart';
 import '../views/receipt_preview_screen.dart';
 
-/// Controller class for handling receipt scanning functionality.
-/// Extends `BaseController` to manage state and handle exceptions.
+/// Controller for handling receipt scanning functionality.
+/// 
+/// This class extends `BaseController` to manage state and handle exceptions 
+/// related to receipt scanning.
 class ReceiptScannerController extends BaseController {
-  /// Configures document scanner options.
-  /// - Uses JPEG format.
-  /// - Scans in full mode.
-  /// - Limits to 1 page.
-  /// - Allows importing from the gallery.
-  final DocumentScannerOptions _documentOptions = DocumentScannerOptions(
-    documentFormat: DocumentFormat.jpeg,
-    mode: ScannerMode.full,
-    pageLimit: 1,
-    isGalleryImport: false,
-  );
-
-  /// Creates a document scanner instance with the specified options.
-  late final _documentScanner = DocumentScanner(options: _documentOptions);
+  /// Instance of `DocumentScanner` for handling scanning operations.
+  DocumentScanner? _documentScanner;
 
   /// Initiates the document scanning process.
-  /// - If no document is scanned, shows a snackbar notification.
+  /// 
+  /// - If no document is scanned, a snackbar notification is shown.
   /// - If a document is scanned, navigates to `ReceiptPreviewScreen` with the scanned images.
-  Future<void> scan() async {
+  Future<void> scan({DocumentScannerOptions? docsOptions}) async {
     try {
-      // Start document scanning
-      DocumentScanningResult result = await _documentScanner.scanDocument();
-
-      final images = result.images;
-
-      // Show a message if no document is scanned
-      if (images.isEmpty) {
+      _documentScanner = DocumentScanner(
+        options: docsOptions ?? DocumentScannerOptions(
+          documentFormat: DocumentFormat.jpeg, // Output format set to JPEG.
+          mode: ScannerMode.filter, // Enables specific scanner features.
+          pageLimit: 1, // Limits scanning to a single page.
+          isGalleryImport: false, // Disables importing from the gallery.
+        ),
+      );
+      
+      DocumentScanningResult? result = await _documentScanner?.scanDocument();
+      final images = result?.images; // List containing scanned image paths.
+      
+      if (images == null || images.isEmpty) {
         showSnacBar(msg: "No receipt document is scanned.");
       } else {
-        // Navigate to the preview screen with scanned documents
-        ReceiptPreviewScreen(
-          documents: images,
-        ).push();
+        ReceiptPreviewScreen(documents: images).push(); // Navigate to preview screen.
       }
     } catch (e) {
-      // Handle any exceptions by setting the error in the controller
-      setException = e;
+      setException = e; // Handle exceptions.
     }
   }
 
-  /// Cleans up resources by closing the document scanner.
+  /// Cleans up resources by closing the document scanner instance.
   void dispose() {
-    _documentScanner.close();
+    _documentScanner?.close();
   }
 }
